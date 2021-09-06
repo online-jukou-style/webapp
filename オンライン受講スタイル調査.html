@@ -55,6 +55,7 @@
             box-shadow: 1px 1px 1px hsl(60, 70%, 50%);
         }
         #target > div {
+            position: relative;
             display: flex;
             flex-wrap: wrap;
             align-items: flex-start;
@@ -72,6 +73,25 @@
         #target > div > span {
             width: 100%;
         }
+
+        #target > div > i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateY(-50%) translateX(-50%);
+            z-index: 0;
+            font-size: 9em;
+            color:hsl(200, 70%, 90%)
+        }
+
+        #target > div.dragover > i {
+            visibility: hidden;
+        }
+
+        #target > div > div {
+            z-index: 10;
+        }
+        
 
         #arrow {
             font-size: 50pt;
@@ -96,7 +116,6 @@
 <body>
     <div id="screen">
         <h1>オンライン受講スタイル調査</h1>
-
         <hr id="sec1">
         <div id="student_id_form">
             <label for="student_id">学生番号記入欄</label><input id="student_id">
@@ -113,16 +132,38 @@
             <p><span id="arrow">⬇️</span>以下にドラッグ & ドロップしてください。</p>
             <div id="target">
                 <div id="desk">
+                    <i class="fas fa-camera"></i>
                     <span>机</span>
                     <div id="item_textbook">教科書</div>
                 </div>
-                <div id="sub_monitor"><span>外部モニタ</span></div>
-                <div id="tv"><span>テレビ</span></div>
-                <div id="notepc"><span>ノート PC</span></div>
-                <div id="sub_notepc"><span>ノート PC サブ機</span></div>
-                <div id="desktop_pc"><span>デスクトップ PC</span></div>
-                <div id="tablet"><span>Tablet</span></div>
-                <div id="smartphone"><span>スマートフォン</span></div>
+                <div id="sub_monitor">
+                    <i class="fas fa-desktop"></i>
+                    <span>外部モニタ</span>
+                </div>
+                <div id="tv">
+                    <i class="fas fa-tv"></i>
+                    <span>テレビ</span>
+                </div>
+                <div id="notepc">
+                    <i class="fas fa-laptop"></i>
+                    <span>ノート PC</span>
+                </div>
+                <div id="sub_notepc">
+                    <i class="fas fa-laptop"></i>
+                    <span>ノート PC サブ機</span>
+                </div>
+                <div id="desktop_pc">
+                    <i class="fas fa-desktop"></i>
+                    <span>デスクトップ PC</span>
+                </div>
+                <div id="tablet">
+                    <i class="fas fa-tablet-alt"></i>
+                    <span>タブレット端末</span>
+                </div>
+                <div id="smartphone">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>スマートフォン</span>
+                </div>
             </div>
         </div>
 
@@ -149,33 +190,36 @@
         // ドロップされる側（配置場所）
         $$('#target > div').forEach(target => {
             target.addEventListener('dragenter', e => {
+                e.preventDefault();
                 console.log('dragenter');
             }, false);
             target.addEventListener('dragover', e => {
-                if (target_ids.includes(e.target.id)) {
-                    e.target.classList.add('dragover');
+                const cur_target = e.currentTarget;
+                if (!cur_target.classList.contains('dragover')) {
+                    e.currentTarget.classList.add('dragover');
                 }
                 e.preventDefault();
                 console.log('dragover');
             }, false);
             target.addEventListener('dragleave', e => {
-                if (target_ids.includes(e.target.id)) {
-                    e.target.classList.remove('dragover');
+                const evt_target = e.target;
+                const cur_target = e.currentTarget;
+                if (evt_target === cur_target) {
+                    e.currentTarget.classList.remove('dragover');
                 }
                 console.log('dragleave');
             }, false);
             target.addEventListener('drop', e => {
-                const target_id = e.target.id;
-                if (target_ids.includes(target_id)) {
-                    e.target.classList.remove('dragover');
-                }
+                const evt_target = e.target;
+                const cur_target = e.currentTarget;
+                cur_target.classList.remove('dragover');
                 console.log('drop');
 
                 let item = e.dataTransfer.getData('text/plain');
-                if (target_id.substr(0, 4) !== 'item') {
-                    e.target.appendChild($('#'+item));
+                if (evt_target === cur_target) {
+                    cur_target.appendChild($('#'+item));
 
-                    result[item] = target_id; 
+                    result[item] = cur_target.id; 
 
                     if (is_completed()) {
                         console.log('completed!')
