@@ -1,5 +1,5 @@
-# webapp
-ウェブアプリバージョン。出力は JSON。
+# オンライン受講スタイル調査ウェブアプリ
+[SSS2021ochi-tateno](https://github.com/online-jukou-style/SSS2021ochi-tateno) のウェブアプリバージョン。出力は JSON。
 
 ## スクリーンショット
 ![スクリーンショット](スクリーンショット.png)
