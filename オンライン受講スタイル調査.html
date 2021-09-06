@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>オンライン受講スタイル調査</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
         * {
             box-sizing: border-box;
@@ -70,21 +71,23 @@
         #target > div.dragover {
             background-color: hsl(200, 70%, 80%);
         }
-        #target > div > span {
+        #target > div > span:first-child {
             width: 100%;
+            z-index: 1;
         }
 
-        #target > div > i {
+        #target > div > span[class^="material-icons"]::before {
+            content: attr(data-icon);
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translateY(-50%) translateX(-50%);
             z-index: 0;
-            font-size: 9em;
+            font-size: 7em;
             color:hsl(200, 70%, 90%)
         }
 
-        #target > div.dragover > i {
+        #target > div.dragover > span[class^="material-icons"]::before {
             visibility: hidden;
         }
 
@@ -92,7 +95,6 @@
             z-index: 10;
         }
         
-
         #arrow {
             font-size: 50pt;
             color: hsl(0, 0%, 84%);
@@ -111,7 +113,6 @@
             white-space: pre-wrap;
         }
     </style>
-    <script src="https://kit.fontawesome.com/be14ac3d46.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="screen">
@@ -129,40 +130,40 @@
                 <div id="item_office">Office</div>
                 <div id="item_handout">授業資料</div>
             </div>
-            <p><span id="arrow">⬇️</span>以下にドラッグ & ドロップしてください。</p>
+            <p><span id="arrow">⬇️⬇️</span>以下にドラッグ & ドロップしてください。</p>
             <div id="target">
                 <div id="desk">
-                    <i class="fas fa-camera"></i>
                     <span>机</span>
+                    <span class="material-icons" data-icon="&#60102"></span>
                     <div id="item_textbook">教科書</div>
                 </div>
-                <div id="sub_monitor">
-                    <i class="fas fa-desktop"></i>
-                    <span>外部モニタ</span>
-                </div>
-                <div id="tv">
-                    <i class="fas fa-tv"></i>
-                    <span>テレビ</span>
-                </div>
                 <div id="notepc">
-                    <i class="fas fa-laptop"></i>
                     <span>ノート PC</span>
+                    <span class="material-icons" data-icon="&#58142"></span>
                 </div>
                 <div id="sub_notepc">
-                    <i class="fas fa-laptop"></i>
                     <span>ノート PC サブ機</span>
+                    <span class="material-icons" data-icon="&#58142"></span>
+                </div>
+                <div id="sub_monitor">
+                    <span>外部モニタ</span>
+                    <span class="material-icons" data-icon="&#61275"></span>
+                </div>
+                <div id="tv">
+                    <span>テレビ</span>
+                    <span class="material-icons" data-icon="&#58163"></span>
                 </div>
                 <div id="desktop_pc">
-                    <i class="fas fa-desktop"></i>
                     <span>デスクトップ PC</span>
+                    <span class="material-icons" data-icon="&#58124"></span>
                 </div>
                 <div id="tablet">
-                    <i class="fas fa-tablet-alt"></i>
                     <span>タブレット端末</span>
+                    <span class="material-icons" data-icon="&#58161"></span>
                 </div>
                 <div id="smartphone">
-                    <i class="fas fa-mobile-alt"></i>
                     <span>スマートフォン</span>
+                    <span class="material-icons" data-icon="&#58149"></span>
                 </div>
             </div>
         </div>
