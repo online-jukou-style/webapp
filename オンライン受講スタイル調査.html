@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オンライン受講スタイル調査</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        hr[id^="sec"] {
+            border: none;
+            border-top: 1px solid #333;
+            height: 5px;
+            margin-top: 30px;
+            overflow: visible;
+        }
+        hr[id^="sec"]::before {
+            position: relative;
+            top: -13px;
+            background: white;
+        }
+        #sec1::before {
+            content: "1 / 3 -- 学生番号を入力してください  ";
+        }
+        #sec2::before {
+            content: "2 / 3 -- 次の資料、ツールをあなたのオンライン受講形態に合わせて、下の欄にドラッグ&ドロップしてください  ";
+        }
+        #sec3::before {
+            content: "3 / 3 -- 結果出力ボタン  ";
+        }
+
+        input {
+            margin: 5px;
+        }
+
+        #target, #items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        #student_id_form, #DandD, #result {
+            padding: 20px;
+            background-color: hsl(200, 10%, 97%);
+        }
+        div[id^="item_"] {
+            width: 100px;
+            height: 40px;
+            border: 1px solid hsl(60, 70%, 50%);
+            text-align: center;
+            vertical-align: middle;
+            margin: 2px;
+            background-color: hsl(60, 70%, 85%);
+            box-shadow: 1px 1px 1px hsl(60, 70%, 50%);
+        }
+        #target > div {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            align-content: flex-start;
+            width: 220px;
+            min-height: 200px;
+            padding: 5px;
+            border: 1px solid hsl(200, 20%, 95%);
+            margin: 5px;
+            background-color: hsl(200, 70%, 95%);
+        }
+        #target > div.dragover {
+            background-color: hsl(200, 70%, 80%);
+        }
+        #target > div > span {
+            width: 100%;
+        }
+
+        #arrow {
+            font-size: 50pt;
+            color: hsl(0, 0%, 84%);
+        }
+
+        button {
+            width: 100%;
+            height: 100px;
+            margin-top: 20px;
+            font-size: 30pt;
+        }
+
+        output {
+            display: block;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/be14ac3d46.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="screen">
+        <h1>オンライン受講スタイル調査</h1>
+
+        <hr id="sec1">
+        <div id="student_id_form">
+            <label for="student_id">学生番号記入欄</label><input id="student_id">
+        </div>
+        
+        <hr id="sec2">
+        <div id="DandD">
+            <div id="items">
+                <div id="item_meet">Meet</div>
+                <div id="item_teams">Teams</div>
+                <div id="item_office">Office</div>
+                <div id="item_handout">授業資料</div>
+            </div>
+            <p><span id="arrow">⬇️</span>以下にドラッグ & ドロップしてください。</p>
+            <div id="target">
+                <div id="desk">
+                    <span>机</span>
+                    <div id="item_textbook">教科書</div>
+                </div>
+                <div id="sub_monitor"><span>外部モニタ</span></div>
+                <div id="tv"><span>テレビ</span></div>
+                <div id="notepc"><span>ノート PC</span></div>
+                <div id="sub_notepc"><span>ノート PC サブ機</span></div>
+                <div id="desktop_pc"><span>デスクトップ PC</span></div>
+                <div id="tablet"><span>Tablet</span></div>
+                <div id="smartphone"><span>スマートフォン</span></div>
+            </div>
+        </div>
+
+        <hr id="sec3">
+        <div id="result">
+            <button>結果出力</button>
+            <output></output>
+        </div>
+
+    </div>
+
+    <script>
+        const $ = selector => document.querySelector(selector);
+        const $$ = selector => document.querySelectorAll(selector);
+        const is_completed = () =>
+            $$('#items > div[id^=item_]').length === 0;
+
+        const target_ids = [...$('#target').children].map(elem => elem.id);
+        let result = {};
+        
+        /**
+         * event listeners
+         */
+        // ドロップされる側（配置場所）
+        $$('#target > div').forEach(target => {
+            target.addEventListener('dragenter', e => {
+                console.log('dragenter');
+            }, false);
+            target.addEventListener('dragover', e => {
+                if (target_ids.includes(e.target.id)) {
+                    e.target.classList.add('dragover');
+                }
+                e.preventDefault();
+                console.log('dragover');
+            }, false);
+            target.addEventListener('dragleave', e => {
+                if (target_ids.includes(e.target.id)) {
+                    e.target.classList.remove('dragover');
+                }
+                console.log('dragleave');
+            }, false);
+            target.addEventListener('drop', e => {
+                const target_id = e.target.id;
+                if (target_ids.includes(target_id)) {
+                    e.target.classList.remove('dragover');
+                }
+                console.log('drop');
+
+                let item = e.dataTransfer.getData('text/plain');
+                if (target_id.substr(0, 4) !== 'item') {
+                    e.target.appendChild($('#'+item));
+
+                    result[item] = target_id; 
+
+                    if (is_completed()) {
+                        console.log('completed!')
+                    };
+                }
+                e.preventDefault();
+            }, false);
+        });
+
+        // ドロップする側（資料、ツール）
+        $$('div[id^=item_]').forEach(item => {
+            item.draggable = true;
+            item.addEventListener('dragstart', e => {
+                console.log(e.target);
+                let data_transfer = e.dataTransfer;
+                data_transfer.setData('text/plain', e.target.id);
+            });
+            item.addEventListener('dragend', e => {
+                console.log(e.target);
+            });
+        });
+
+        // 結果出力ボタン
+        $('button').addEventListener('click', e => {
+            /**
+             * result オブジェクトとその JSON 文字列化
+             */
+            result = [...$$('div[id^=item_]')]
+                .filter(item => item.parentElement.parentElement.id === 'target')
+                .reduce((obj, item) => (obj[item.id] = item.parentElement.id, obj), {});
+
+            student_id = $('#student_id').value;
+            if (student_id === '') {
+                student_id = '学生番号を入力してやり直してください';
+            }
+            result['student_id'] = student_id;
+
+            const json = JSON.stringify(result);
+
+            /**
+             * 画面上に result の内容を出力
+             */
+            $('output').value = '';
+            if (!is_completed()) {
+                $('output').value += '***未配置の資料、ツールがあります。***\n';
+            }
+            for (const [key, value] of Object.entries(result)) {
+                $('output').value += `${key}: ${value}\n`;
+            }
+            $('output').value += 'JSON: ' + json;
+
+            /**
+             * 結果の JSON ファイルをダウンロード
+             */
+            const blob = new Blob([json], {type: 'application/json'});
+            const a = document.createElement('a');
+            document.body.appendChild(a);
+            a.download = `${student_id}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }, false);
+    </script>
+</body>
+</html>
